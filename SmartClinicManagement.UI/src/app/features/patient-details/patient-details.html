@@ -1,0 +1,163 @@
+<div class="patient-details-page">
+
+  <button class="btn btn-link back-link" (click)="back()">
+    <i class="bi bi-arrow-left"></i> Back to Patients
+  </button>
+
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary"></div>
+    <span>Loading...</span>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="error-state">
+    {{ errorMessage }}
+  </div>
+
+
+  <ng-container *ngIf="!loading && patient">
+
+    <!-- PATIENT SUMMARY CARD -->
+
+    <div class="card summary-card">
+
+      <div class="summary-banner">
+
+        <div class="avatar" *ngIf="patientUser">
+          {{ patientUser.firstName.charAt(0) }}{{ patientUser.lastName.charAt(0) }}
+        </div>
+
+        <div>
+          <h1 *ngIf="patientUser">{{ patientUser.firstName }} {{ patientUser.lastName }}</h1>
+          <span class="badge" [class.bg-success]="patient.status === 'Active'" [class.bg-secondary]="patient.status !== 'Active'">
+            {{ patient.status }}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="card-body">
+
+        <div class="info-grid">
+
+          <div class="info-item" *ngIf="patientUser">
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ patientUser.email }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="patientUser">
+            <span class="info-label">Phone</span>
+            <span class="info-value">{{ patientUser.phone || '—' }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Blood Group</span>
+            <span class="info-value">{{ patient.bloodGroup || '—' }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Height / Weight</span>
+            <span class="info-value">
+              {{ patient.height ? (patient.height + ' cm') : '—' }} /
+              {{ patient.weight ? (patient.weight + ' kg') : '—' }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Emergency Contact</span>
+            <span class="info-value">
+              {{ patient.emergencyContactName || '—' }}
+              <span *ngIf="patient.emergencyContactPhone">({{ patient.emergencyContactPhone }})</span>
+            </span>
+          </div>
+
+          <div class="info-item full-width" *ngIf="patient.allergies">
+            <span class="info-label">Allergies</span>
+            <span class="info-value">{{ patient.allergies }}</span>
+          </div>
+
+          <div class="info-item full-width" *ngIf="patient.medicalHistory">
+            <span class="info-label">Medical History</span>
+            <span class="info-value">{{ patient.medicalHistory }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- MEDICAL RECORDS -->
+
+    <div class="card records-card">
+
+      <div class="card-header">
+        <h2>Medical Records</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let record of medicalRecords" class="record-item">
+
+          <div class="record-main">
+            <strong>{{ record.diagnosis || 'No diagnosis recorded' }}</strong>
+            <span class="record-sub" *ngIf="!isDoctorRole">{{ getDoctorName(record.doctorID) }}</span>
+          </div>
+
+          <span class="record-date">{{ record.visitDate ? (record.visitDate | slice:0:10) : '' }}</span>
+
+          <button class="btn btn-outline-secondary btn-sm" (click)="viewPrescriptions(record.recordID)">
+            Prescriptions
+          </button>
+
+        </div>
+
+        <div class="empty-state" *ngIf="medicalRecords.length === 0">
+          No medical records found.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- APPOINTMENT HISTORY -->
+
+    <div class="card appointments-card">
+
+      <div class="card-header">
+        <h2>Appointment History</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let appt of appointments" class="appt-item">
+
+          <span class="appt-date">{{ appt.appointmentDate }} {{ appt.appointmentTime?.substring(0,5) }}</span>
+
+          <span *ngIf="!isDoctorRole">with {{ getDoctorName(appt.doctorID) }}</span>
+
+          <span>{{ appt.appointmentType || 'Consultation' }}</span>
+
+          <span class="badge"
+                [class.bg-warning]="appt.status === 'Scheduled'"
+                [class.bg-primary]="appt.status === 'Confirmed'"
+                [class.bg-success]="appt.status === 'Completed'"
+                [class.bg-danger]="appt.status === 'Cancelled'">
+            {{ appt.status }}
+          </span>
+
+        </div>
+
+        <div class="empty-state" *ngIf="appointments.length === 0">
+          No appointment history found.
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

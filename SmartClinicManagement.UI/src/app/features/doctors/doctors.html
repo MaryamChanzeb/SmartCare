@@ -1,0 +1,289 @@
+<div class="doctors-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Doctors</h1>
+      <h3>Total Doctors: {{ doctors.length }}</h3>
+
+      <p>
+        Manage clinic doctors
+      </p>
+    </div>
+
+    <button class="btn btn-primary"
+            (click)="openCreateForm()">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Add Doctor
+
+    </button>
+
+  </div>
+
+
+  <div class="alert alert-danger d-flex justify-content-between align-items-center"
+       *ngIf="errorMessage">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn-close" aria-label="Dismiss" (click)="errorMessage = ''"></button>
+  </div>
+
+
+  <!-- FORM -->
+
+  <div class="card form-card"
+       *ngIf="showForm">
+
+    <div class="card-header">
+
+      <h3>
+        {{ editingId ? 'Edit Doctor' : 'Create Doctor' }}
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="doctorForm"
+            (ngSubmit)="saveDoctor()">
+
+        <!-- Account details are only collected when creating a new
+             doctor; the user account is created automatically by the
+             backend. When editing, the linked account is managed from
+             User Management instead. -->
+        <ng-container *ngIf="editingId === null">
+
+          <h3 class="section-title">Account Information</h3>
+
+          <div class="row">
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-control" formControlName="firstName" placeholder="Enter first name">
+              <div class="text-danger mt-1"
+                   *ngIf="doctorForm.get('firstName')?.touched && doctorForm.get('firstName')?.invalid">
+                First name is required.
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-control" formControlName="lastName" placeholder="Enter last name">
+              <div class="text-danger mt-1"
+                   *ngIf="doctorForm.get('lastName')?.touched && doctorForm.get('lastName')?.invalid">
+                Last name is required.
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+              <div class="text-danger mt-1"
+                   *ngIf="doctorForm.get('email')?.touched && doctorForm.get('email')?.invalid">
+                A valid email is required.
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Phone</label>
+              <input type="text" class="form-control" formControlName="phone" placeholder="Enter phone">
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Gender</label>
+              <select class="form-select" formControlName="gender">
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" class="form-control" formControlName="dateOfBirth">
+            </div>
+
+          </div>
+
+          <h3 class="section-title">Professional Information</h3>
+
+        </ng-container>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">License Number</label>
+            <input type="text" class="form-control" formControlName="licenseNumber" placeholder="Enter license number">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorForm.get('licenseNumber')?.touched && doctorForm.get('licenseNumber')?.invalid">
+              License number is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Specialization</label>
+            <input type="text" class="form-control" formControlName="specialization" placeholder="e.g. Cardiology">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorForm.get('specialization')?.touched && doctorForm.get('specialization')?.invalid">
+              Specialization is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Qualification</label>
+            <input type="text" class="form-control" formControlName="qualification" placeholder="e.g. MBBS, FCPS">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Experience (Years)</label>
+            <input type="number" min="0" class="form-control" formControlName="experienceYears">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Consultation Fee</label>
+            <input type="number" min="0" class="form-control" formControlName="consultationFee">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Room Number</label>
+            <input type="text" class="form-control" formControlName="roomNumber">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Joining Date</label>
+            <input type="date" class="form-control" formControlName="joiningDate">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" formControlName="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary me-2">
+          {{ editingId ? 'Update' : 'Save' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="card doctors-card">
+
+    <div class="card-header list-header">
+      <h2>Doctor List</h2>
+      <span>Total: {{ doctors.length }}</span>
+    </div>
+
+    <!-- Loading -->
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <!-- Table -->
+
+    <div *ngIf="!loading">
+
+      <table class="table table-hover" *ngIf="doctors.length > 0">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>License #</th>
+            <th>Specialization</th>
+            <th>Experience</th>
+            <th>Fee</th>
+            <th>Room</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let doctor of doctors; let i = index">
+
+            <td>{{ i + 1 }}</td>
+
+            <td>{{ getUserName(doctor.userID) }}</td>
+
+            <td>{{ doctor.licenseNumber }}</td>
+
+            <td>{{ doctor.specialization }}</td>
+
+            <td>{{ doctor.experienceYears }} yrs</td>
+
+            <td>{{ doctor.consultationFee | currency }}</td>
+
+            <td>{{ doctor.roomNumber }}</td>
+
+            <td>
+              <span class="badge" [class.bg-success]="doctor.status === 'Active'" [class.bg-secondary]="doctor.status !== 'Active'">
+                {{ doctor.status }}
+              </span>
+            </td>
+
+            <td>
+
+              <button class="btn btn-primary btn-sm me-2" (click)="editDoctor(doctor)">
+                Edit
+              </button>
+
+              <button class="btn btn-danger btn-sm" (click)="deleteDoctor(doctor.doctorID)">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="empty-state" *ngIf="doctors.length === 0">
+        No Doctors Found
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

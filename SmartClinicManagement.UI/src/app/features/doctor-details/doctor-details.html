@@ -1,0 +1,82 @@
+<div class="doctor-details-page">
+
+  <button class="btn btn-link back-link" (click)="back()">
+    <i class="bi bi-arrow-left"></i> Back to Find Doctors
+  </button>
+
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary"></div>
+    <span>Loading...</span>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="error-state">
+    {{ errorMessage }}
+  </div>
+
+
+  <div class="card details-card" *ngIf="!loading && doctor">
+
+    <div class="details-banner">
+
+      <div class="avatar">
+        <i class="bi bi-person-badge-fill"></i>
+      </div>
+
+      <div>
+        <h1 *ngIf="doctorUser">Dr. {{ doctorUser.firstName }} {{ doctorUser.lastName }}</h1>
+        <span class="specialization-pill">{{ doctor.specialization }}</span>
+      </div>
+
+    </div>
+
+    <div class="card-body">
+
+      <div class="info-grid">
+
+        <div class="info-item" *ngIf="doctorUser">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ doctorUser.email }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Qualification</span>
+          <span class="info-value">{{ doctor.qualification || '—' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Experience</span>
+          <span class="info-value">{{ doctor.experienceYears }} years</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Consultation Fee</span>
+          <span class="info-value">{{ doctor.consultationFee | currency }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Room Number</span>
+          <span class="info-value">{{ doctor.roomNumber || '—' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Availability</span>
+          <span class="info-value">
+            <span class="badge" [class.bg-success]="doctor.status === 'Active'" [class.bg-secondary]="doctor.status !== 'Active'">
+              {{ doctor.status === 'Active' ? 'Available' : 'Unavailable' }}
+            </span>
+          </span>
+        </div>
+
+      </div>
+
+      <button class="btn btn-primary book-btn" *ngIf="canBook" [disabled]="doctor.status !== 'Active'" (click)="bookAppointment()">
+        <i class="bi bi-calendar-plus-fill"></i>
+        {{ doctor.status === 'Active' ? 'Book Appointment' : 'Currently Unavailable' }}
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

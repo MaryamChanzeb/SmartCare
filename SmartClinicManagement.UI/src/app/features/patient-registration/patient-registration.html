@@ -1,0 +1,178 @@
+<div class="registration-page">
+
+  <div class="page-header">
+    <h1>Register Patient</h1>
+    <p>Create a new patient's account and clinical profile in one step</p>
+  </div>
+
+
+  <div class="card form-card">
+
+    <div class="card-body">
+
+      <div class="alert alert-success" *ngIf="successMessage">
+
+        {{ successMessage }}
+
+        <button class="btn btn-sm btn-outline-success ms-2" (click)="goToPatients()">
+          View Patients
+        </button>
+
+      </div>
+
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="registrationForm" (ngSubmit)="register()">
+
+        <h3 class="section-title">Account Information</h3>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" formControlName="firstName">
+            <div class="text-danger mt-1"
+                 *ngIf="registrationForm.get('firstName')?.touched && registrationForm.get('firstName')?.invalid">
+              First name is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" formControlName="lastName">
+            <div class="text-danger mt-1"
+                 *ngIf="registrationForm.get('lastName')?.touched && registrationForm.get('lastName')?.invalid">
+              Last name is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email">
+            <div class="text-danger mt-1"
+                 *ngIf="registrationForm.get('email')?.touched && registrationForm.get('email')?.invalid">
+              A valid email is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth">
+          </div>
+
+        </div>
+
+
+        <h3 class="section-title">Doctor Assignment</h3>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Assign Doctor</label>
+            <select class="form-select" formControlName="doctorID">
+              <option [ngValue]="null">No doctor assigned yet</option>
+              <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+                {{ getDoctorName(doctor) }}
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <h3 class="section-title">Clinical Profile</h3>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Blood Group</label>
+            <select class="form-select" formControlName="bloodGroup">
+              <option value="">Select blood group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Height (cm)</label>
+            <input type="number" min="0" class="form-control" formControlName="height">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" min="0" class="form-control" formControlName="weight">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Emergency Contact Name</label>
+            <input type="text" class="form-control" formControlName="emergencyContactName">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Emergency Contact Phone</label>
+            <input type="text" class="form-control" formControlName="emergencyContactPhone">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Allergies</label>
+            <textarea class="form-control" rows="2" formControlName="allergies"></textarea>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Medical History</label>
+            <textarea class="form-control" rows="2" formControlName="medicalHistory"></textarea>
+          </div>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Registering...' : 'Register Patient' }}
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

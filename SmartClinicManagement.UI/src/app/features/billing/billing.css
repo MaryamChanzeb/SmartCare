@@ -1,0 +1,81 @@
+.billing-page {
+  padding: 10px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+  .page-header h1 {
+    font-size: 42px;
+    margin-bottom: 5px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+.billing-card,
+.form-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 28px;
+}
+
+  .list-header h2 {
+    margin: 0;
+  }
+
+.loading {
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  color: #0d6efd;
+  font-size: 18px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.action-cell {
+  display: flex;
+  gap: 6px;
+}
+
+.form-hint {
+  color: #6c757d;
+  font-size: 13px;
+  display: block;
+  margin-top: 4px;
+}
+
+.total-preview {
+  background: #f5f7fa;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 16px;
+}
+
+  .total-preview small {
+    color: #6c757d;
+    font-size: 13px;
+    margin-left: 8px;
+  }

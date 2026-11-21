@@ -1,0 +1,97 @@
+.users-page {
+  padding: 10px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+  .page-header h1 {
+    font-size: 42px;
+    margin-bottom: 5px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+.users-card,
+.form-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 28px;
+}
+
+  .list-header h2 {
+    margin: 0;
+  }
+
+.loading {
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  color: #0d6efd;
+  font-size: 18px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.role-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.role-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  text-align: left;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+  .role-option i {
+    font-size: 26px;
+    color: #0d6efd;
+  }
+
+.role-option-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.role-option-desc {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.role-option:hover {
+  border-color: #0d6efd;
+  box-shadow: 0 4px 14px rgba(13, 110, 253, 0.15);
+  transform: translateY(-2px);
+}

@@ -1,0 +1,165 @@
+<div class="prescriptions-page">
+
+  <div class="page-header">
+
+    <div>
+      <button class="btn btn-link back-link" (click)="backToRecords()">
+        <i class="bi bi-arrow-left"></i> Back to Medical Records
+      </button>
+
+      <h1>Prescriptions</h1>
+
+      <p *ngIf="record">
+        For medical record #{{ record.recordID }}
+        <span *ngIf="record.diagnosis"> — {{ record.diagnosis }}</span>
+      </p>
+
+    </div>
+
+    <button class="btn btn-primary"
+            *ngIf="canManagePrescriptions"
+            (click)="openCreateForm()">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Add Prescription
+
+    </button>
+
+  </div>
+
+
+  <!-- FORM -->
+
+  <div class="card form-card"
+       *ngIf="showForm">
+
+    <div class="card-header">
+
+      <h3>
+        {{ editingId ? 'Edit Prescription' : 'Add Prescription' }}
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="prescriptionForm"
+            (ngSubmit)="savePrescription()">
+
+        <div class="mb-3">
+          <label class="form-label">Medicine Name</label>
+          <input type="text" class="form-control" formControlName="medicineName" placeholder="e.g. Amoxicillin 500mg">
+          <div class="text-danger mt-1"
+               *ngIf="prescriptionForm.get('medicineName')?.touched && prescriptionForm.get('medicineName')?.invalid">
+            Medicine name is required.
+          </div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Dosage</label>
+            <input type="text" class="form-control" formControlName="dosage" placeholder="e.g. 1 tablet">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Frequency</label>
+            <input type="text" class="form-control" formControlName="frequency" placeholder="e.g. Twice a day">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Duration</label>
+            <input type="text" class="form-control" formControlName="duration" placeholder="e.g. 7 days">
+          </div>
+
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Instructions</label>
+          <textarea class="form-control" rows="2" formControlName="instructions" placeholder="e.g. After meals"></textarea>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary me-2">
+          {{ editingId ? 'Update' : 'Save' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="card prescriptions-card">
+
+    <div class="card-header list-header">
+      <h2>Prescription List</h2>
+      <span>Total: {{ prescriptions.length }}</span>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <div *ngIf="!loading">
+
+      <table class="table table-hover" *ngIf="prescriptions.length > 0">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Medicine</th>
+            <th>Dosage</th>
+            <th>Frequency</th>
+            <th>Duration</th>
+            <th>Instructions</th>
+            <th *ngIf="canManagePrescriptions">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let prescription of prescriptions; let i = index">
+
+            <td>{{ i + 1 }}</td>
+
+            <td>{{ prescription.medicineName }}</td>
+
+            <td>{{ prescription.dosage }}</td>
+
+            <td>{{ prescription.frequency }}</td>
+
+            <td>{{ prescription.duration }}</td>
+
+            <td>{{ prescription.instructions }}</td>
+
+            <td *ngIf="canManagePrescriptions">
+
+              <button class="btn btn-primary btn-sm" (click)="editPrescription(prescription)">
+                Edit
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="empty-state" *ngIf="prescriptions.length === 0">
+        No Prescriptions Found For This Record
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

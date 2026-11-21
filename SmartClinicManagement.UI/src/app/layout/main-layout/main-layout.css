@@ -1,0 +1,45 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f7fa;
+ 
+  overflow: hidden;
+}
+
+.main-area {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  
+  min-height: 0;
+}
+
+.content-area {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+app-sidebar {
+  display: block;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+app-navbar {
+  display: block;
+  flex-shrink: 0;
+}
+
+app-footer {
+  display: block;
+  flex-shrink: 0;
+}

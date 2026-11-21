@@ -1,0 +1,310 @@
+<div class="profile-page">
+
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p>View and update your personal information</p>
+  </div>
+
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary"></div>
+    <span>Loading...</span>
+  </div>
+
+
+  <div *ngIf="!loading && errorMessage" class="error-state">
+    {{ errorMessage }}
+  </div>
+
+
+  <div class="card profile-card" *ngIf="!loading && user">
+
+    <div class="profile-banner">
+
+      <div class="avatar">
+        {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+      </div>
+
+      <div>
+        <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+        <span class="role-pill">{{ user.roleName }}</span>
+      </div>
+
+    </div>
+
+    <div class="card-body">
+
+      <div class="alert alert-success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="alert alert-danger" *ngIf="errorMessage && editMode">
+        {{ errorMessage }}
+      </div>
+
+      <!-- READ-ONLY VIEW -->
+
+      <div class="info-grid" *ngIf="!editMode">
+
+        <div class="info-item">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ user.email }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Phone</span>
+          <span class="info-value">{{ user.phone || '—' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Gender</span>
+          <span class="info-value">{{ user.gender || '—' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Date of Birth</span>
+          <span class="info-value">{{ user.dateOfBirth ? (user.dateOfBirth | slice:0:10) : '—' }}</span>
+        </div>
+
+        <div class="info-item" *ngIf="user.departmentName">
+          <span class="info-label">Department</span>
+          <span class="info-value">{{ user.departmentName }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Status</span>
+          <span class="info-value">{{ user.status }}</span>
+        </div>
+
+        <!-- Patient-specific -->
+        <ng-container *ngIf="patientInfo">
+
+          <div class="info-item">
+            <span class="info-label">Blood Group</span>
+            <span class="info-value">{{ patientInfo.bloodGroup || '—' }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Emergency Contact</span>
+            <span class="info-value">
+              {{ patientInfo.emergencyContactName || '—' }}
+              <span *ngIf="patientInfo.emergencyContactPhone">({{ patientInfo.emergencyContactPhone }})</span>
+            </span>
+          </div>
+
+        </ng-container>
+
+        <button class="btn btn-primary edit-btn" (click)="startEdit()">
+          <i class="bi bi-pencil-fill"></i> Edit Profile
+        </button>
+
+      </div>
+
+
+      <!-- EDIT FORM -->
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" *ngIf="editMode">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" formControlName="firstName">
+            <div class="text-danger mt-1"
+                 *ngIf="profileForm.get('firstName')?.touched && profileForm.get('firstName')?.invalid">
+              First name is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" formControlName="lastName">
+            <div class="text-danger mt-1"
+                 *ngIf="profileForm.get('lastName')?.touched && profileForm.get('lastName')?.invalid">
+              Last name is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth">
+          </div>
+
+        </div>
+
+        <p class="locked-note">
+          <i class="bi bi-lock-fill"></i>
+          Email, Department, Role, and Status can only be changed by an administrator.
+        </p>
+
+        <button type="submit" class="btn btn-primary me-2" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ============ DOCTOR: PROFESSIONAL INFORMATION ============ -->
+
+  <div class="card professional-card" *ngIf="!loading && doctorInfo">
+
+    <div class="card-header">
+      <h3>Professional Information</h3>
+    </div>
+
+    <div class="card-body">
+
+      <div class="alert alert-success" *ngIf="doctorSuccessMessage">
+        {{ doctorSuccessMessage }}
+      </div>
+
+      <div class="alert alert-danger" *ngIf="doctorErrorMessage && doctorEditMode">
+        {{ doctorErrorMessage }}
+      </div>
+
+      <!-- READ-ONLY VIEW -->
+
+      <div class="info-grid" *ngIf="!doctorEditMode">
+
+        <div class="info-item">
+          <span class="info-label">License Number</span>
+          <span class="info-value">{{ doctorInfo.licenseNumber }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Specialization</span>
+          <span class="info-value">{{ doctorInfo.specialization }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Qualification</span>
+          <span class="info-value">{{ doctorInfo.qualification || '—' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Experience</span>
+          <span class="info-value">{{ doctorInfo.experienceYears }} years</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Consultation Fee</span>
+          <span class="info-value">{{ doctorInfo.consultationFee | currency }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Room Number</span>
+          <span class="info-value">{{ doctorInfo.roomNumber || '—' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Availability</span>
+          <span class="info-value">
+            <span class="badge" [class.bg-success]="doctorInfo.status === 'Active'" [class.bg-secondary]="doctorInfo.status !== 'Active'">
+              {{ doctorInfo.status === 'Active' ? 'Available' : 'Unavailable' }}
+            </span>
+          </span>
+        </div>
+
+        <button class="btn btn-primary edit-btn" (click)="startDoctorEdit()">
+          <i class="bi bi-pencil-fill"></i> Edit Professional Info
+        </button>
+
+      </div>
+
+
+      <!-- EDIT FORM -->
+
+      <form [formGroup]="doctorForm" (ngSubmit)="saveDoctorInfo()" *ngIf="doctorEditMode">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Specialization</label>
+            <input type="text" class="form-control" formControlName="specialization">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorForm.get('specialization')?.touched && doctorForm.get('specialization')?.invalid">
+              Specialization is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Qualification</label>
+            <input type="text" class="form-control" formControlName="qualification" placeholder="e.g. MBBS, FCPS">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Experience (Years)</label>
+            <input type="number" min="0" class="form-control" formControlName="experienceYears">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Consultation Fee</label>
+            <input type="number" min="0" class="form-control" formControlName="consultationFee">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Room Number</label>
+            <input type="text" class="form-control" formControlName="roomNumber">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Availability</label>
+            <select class="form-select" formControlName="status">
+              <option value="Active">Available</option>
+              <option value="Inactive">Unavailable</option>
+            </select>
+          </div>
+
+        </div>
+
+        <p class="locked-note">
+          <i class="bi bi-lock-fill"></i>
+          License Number can only be changed by an administrator.
+        </p>
+
+        <button type="submit" class="btn btn-primary me-2" [disabled]="doctorSaving">
+          {{ doctorSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelDoctorEdit()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

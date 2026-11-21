@@ -1,0 +1,73 @@
+<div class="doctor-schedule-page">
+
+  <div class="page-header">
+    <h1>Doctor Schedule</h1>
+    <p>View a doctor's appointments for a given day</p>
+  </div>
+
+
+  <div class="card search-card">
+
+    <div class="card-body search-row">
+
+      <select class="form-select" [(ngModel)]="selectedDoctorId">
+        <option [ngValue]="null">Select doctor</option>
+        <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+          {{ getDoctorName(doctor.doctorID) }} — {{ doctor.specialization }}
+        </option>
+      </select>
+
+      <input type="date" class="form-control" [(ngModel)]="selectedDate">
+
+      <button class="btn btn-primary" [disabled]="!selectedDoctorId" (click)="viewSchedule()">
+        View Schedule
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary"></div>
+    <span>Loading...</span>
+  </div>
+
+
+  <div class="card schedule-card" *ngIf="!loading && hasSearched">
+
+    <div class="card-header list-header">
+      <h2>{{ selectedDoctor ? getDoctorName(selectedDoctor.doctorID) : '' }} — {{ selectedDate }}</h2>
+      <span>{{ scheduleForDay.length }} appointment(s)</span>
+    </div>
+
+    <div class="card-body">
+
+      <div *ngFor="let appt of scheduleForDay" class="schedule-item">
+
+        <span class="time-pill">{{ appt.appointmentTime?.substring(0,5) }}</span>
+
+        <span class="schedule-patient">{{ getPatientName(appt.patientID) }}</span>
+
+        <span>{{ appt.appointmentType || 'Consultation' }}</span>
+
+        <span class="badge"
+              [class.bg-warning]="appt.status === 'Scheduled'"
+              [class.bg-info]="appt.status === 'Confirmed'"
+              [class.bg-primary]="appt.status === 'CheckedIn'"
+              [class.bg-success]="appt.status === 'Completed'"
+              [class.bg-danger]="appt.status === 'Cancelled'">
+          {{ appt.status }}
+        </span>
+
+      </div>
+
+      <div class="empty-state" *ngIf="scheduleForDay.length === 0">
+        No appointments for this doctor on the selected day.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

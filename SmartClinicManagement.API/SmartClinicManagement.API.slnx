@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="../SmartClinicManagement.Application/SmartClinicManagement.Application.csproj" />
+  <Project Path="../SmartClinicManagement.Domain/SmartClinicManagement.Domain.csproj" />
+  <Project Path="../SmartClinicManagement.Infrastructure/SmartClinicManagement.Infrastructure.csproj" />
+  <Project Path="../SmartClinicManagement.Persistence/SmartClinicManagement.Persistence.csproj" />
+  <Project Path="../SmartClinicManagement.UI/SmartClinicManagement.UI.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="SmartClinicManagement.API.csproj" />
+</Solution>

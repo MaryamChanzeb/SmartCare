@@ -1,0 +1,36 @@
+.registration-page {
+  padding: 10px;
+  max-width: 900px;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+  .page-header h1 {
+    font-size: 36px;
+    margin-bottom: 5px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 16px;
+  }
+
+.form-card {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  font-size: 18px;
+  color: #212529;
+  margin: 20px 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e7f1ff;
+}
+
+  .section-title:first-of-type {
+    margin-top: 0;
+  }

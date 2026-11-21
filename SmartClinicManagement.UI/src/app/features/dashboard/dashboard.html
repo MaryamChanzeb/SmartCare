@@ -1,0 +1,634 @@
+<div class="dashboard-page">
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary"></div>
+    <span>Loading dashboard...</span>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="error-state">
+    {{ errorMessage }}
+  </div>
+
+
+  <!-- ============ ADMIN / SUPERADMIN ============ -->
+
+  <ng-container *ngIf="!loading && !errorMessage && isAdminRole && stats">
+
+    <div class="stats-grid">
+
+      <a routerLink="/users" class="stat-card stat-purple">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalUsers }}</span>
+          <span class="stat-label">Users</span>
+        </div>
+      </a>
+
+      <a routerLink="/departments" class="stat-card stat-blue">
+        <div class="stat-icon"><i class="bi bi-building"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalDepartments }}</span>
+          <span class="stat-label">Departments</span>
+        </div>
+      </a>
+
+      <a routerLink="/doctors" class="stat-card stat-green">
+        <div class="stat-icon"><i class="bi bi-heart-pulse-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalDoctors }}</span>
+          <span class="stat-label">Doctors</span>
+        </div>
+      </a>
+
+      <a routerLink="/patients" class="stat-card stat-orange">
+        <div class="stat-icon"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalPatients }}</span>
+          <span class="stat-label">Patients</span>
+        </div>
+      </a>
+
+      <a routerLink="/appointments" class="stat-card stat-teal">
+        <div class="stat-icon"><i class="bi bi-calendar-check-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalAppointments }}</span>
+          <span class="stat-label">Appointments</span>
+        </div>
+      </a>
+
+      <a routerLink="/payments" class="stat-card stat-indigo">
+        <div class="stat-icon"><i class="bi bi-cash-coin"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" [title]="stats.totalRevenue | currency">{{ stats.totalRevenue | currency }}</span>
+          <span class="stat-label">Total Revenue</span>
+        </div>
+      </a>
+
+    </div>
+
+
+    <div class="charts-grid">
+
+      <div class="card chart-card">
+
+        <div class="card-header">
+          <h2>Appointments by Status</h2>
+        </div>
+
+        <div class="card-body chart-body">
+
+          <div class="donut" [style.background]="'conic-gradient(' + appointmentStatusGradient + ')'">
+            <div class="donut-hole">
+              <span class="donut-total">{{ stats.totalAppointments }}</span>
+              <span class="donut-label">Total</span>
+            </div>
+          </div>
+
+          <div class="chart-legend">
+            <div class="legend-item" *ngFor="let seg of appointmentStatusSegments">
+              <span class="legend-dot" [style.background]="seg.color"></span>
+              <span class="legend-label">{{ seg.label }}</span>
+              <span class="legend-value">{{ seg.value }}</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card chart-card">
+
+        <div class="card-header">
+          <h2>Billing Status</h2>
+        </div>
+
+        <div class="card-body chart-body">
+
+          <div class="bar-chart">
+            <div class="bar-row" *ngFor="let seg of billingSegments">
+              <span class="bar-label">{{ seg.label }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="(seg.value / maxBillingValue) * 100" [style.background]="seg.color"></div>
+              </div>
+              <span class="bar-value">{{ seg.value }}</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card chart-card">
+
+        <div class="card-header">
+          <h2>Revenue Trend</h2>
+        </div>
+
+        <div class="card-body chart-body revenue-trend-body">
+
+          <div class="revenue-bars">
+
+            <div class="revenue-bar-col" *ngFor="let point of revenuePoints">
+
+              <span class="revenue-bar-value">{{ formatRevenueShort(point.revenue) }}</span>
+
+              <div class="revenue-bar-track">
+                <div class="revenue-bar-fill" [style.height.%]="revenueBarHeight(point.revenue)"></div>
+              </div>
+
+              <span class="revenue-bar-month">{{ point.month }}</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card recent-list">
+
+      <div class="card-header">
+        <h2>Recent Appointments</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let appt of recentAppointments" class="recent-item">
+
+          <div class="recent-main">
+            <strong>{{ getPatientName(appt.patientID) }}</strong>
+            <span class="recent-sub">with {{ getDoctorName(appt.doctorID) }}</span>
+          </div>
+
+          <span class="recent-date">{{ appt.appointmentDate }} {{ appt.appointmentTime?.substring(0,5) }}</span>
+
+          <span class="badge"
+                [class.bg-warning]="appt.status === 'Scheduled'"
+                [class.bg-primary]="appt.status === 'Confirmed'"
+                [class.bg-success]="appt.status === 'Completed'"
+                [class.bg-danger]="appt.status === 'Cancelled'">
+            {{ appt.status }}
+          </span>
+
+        </div>
+
+        <div class="empty-state" *ngIf="recentAppointments.length === 0">
+          No appointments yet.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="quick-links card">
+
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+
+      <div class="card-body quick-links-body">
+
+        <a routerLink="/appointments" class="quick-link">
+          <i class="bi bi-calendar-check-fill"></i> Appointments
+        </a>
+
+        <a routerLink="/patients" class="quick-link">
+          <i class="bi bi-clipboard2-pulse-fill"></i> Patients
+        </a>
+
+        <a routerLink="/billing" class="quick-link">
+          <i class="bi bi-receipt"></i> Billing
+        </a>
+
+        <a routerLink="/payments" class="quick-link">
+          <i class="bi bi-cash-coin"></i> Payments
+        </a>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- ============ DOCTOR ============ -->
+
+  <ng-container *ngIf="!loading && !errorMessage && isDoctorRole">
+
+    <div class="stats-grid">
+
+      <a routerLink="/appointments" class="stat-card stat-teal">
+        <div class="stat-icon"><i class="bi bi-calendar-day-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ doctorTodayAppointments.length }}</span>
+          <span class="stat-label">Today's Appointments</span>
+        </div>
+      </a>
+
+      <a routerLink="/appointments" class="stat-card stat-blue">
+        <div class="stat-icon"><i class="bi bi-calendar-check-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ doctorUpcomingCount }}</span>
+          <span class="stat-label">Upcoming Appointments</span>
+        </div>
+      </a>
+
+      <a routerLink="/patients" class="stat-card stat-orange">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ doctorPatientCount }}</span>
+          <span class="stat-label">Assigned Patients</span>
+        </div>
+      </a>
+
+    </div>
+
+
+    <div class="card schedule-list">
+
+      <div class="card-header">
+        <h2>Today's Schedule</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let appt of doctorTodayAppointments" class="schedule-item">
+
+          <span class="time-pill">{{ appt.appointmentTime?.substring(0,5) }}</span>
+
+          <span class="schedule-patient">{{ getPatientName(appt.patientID) }}</span>
+
+          <span>{{ appt.appointmentType || 'Consultation' }}</span>
+
+          <span class="badge"
+                [class.bg-warning]="appt.status === 'Scheduled'"
+                [class.bg-primary]="appt.status === 'Confirmed'"
+                [class.bg-success]="appt.status === 'Completed'">
+            {{ appt.status }}
+          </span>
+
+        </div>
+
+        <div class="empty-state" *ngIf="doctorTodayAppointments.length === 0">
+          No appointments scheduled for today.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="quick-links card">
+
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+
+      <div class="card-body quick-links-body">
+
+        <a routerLink="/appointments" class="quick-link">
+          <i class="bi bi-calendar-check-fill"></i> My Appointments
+        </a>
+
+        <a routerLink="/patients" class="quick-link">
+          <i class="bi bi-people-fill"></i> My Patients
+        </a>
+
+        <a routerLink="/medical-records" class="quick-link">
+          <i class="bi bi-journal-medical"></i> Medical Records
+        </a>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- ============ RECEPTIONIST ============ -->
+
+  <ng-container *ngIf="!loading && !errorMessage && isReceptionistRole && stats">
+
+    <div class="stats-grid">
+
+      <a routerLink="/appointments" class="stat-card stat-teal">
+        <div class="stat-icon"><i class="bi bi-calendar-day-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ receptionistTodayAppointments.length }}</span>
+          <span class="stat-label">Today's Appointments</span>
+        </div>
+      </a>
+
+      <a routerLink="/appointments" class="stat-card stat-green">
+        <div class="stat-icon"><i class="bi bi-person-check-fill"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ receptionistCheckedInCount }}</span>
+          <span class="stat-label">Checked In Today</span>
+        </div>
+      </a>
+
+      <a routerLink="/billing" class="stat-card stat-red">
+        <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ receptionistPendingCount }}</span>
+          <span class="stat-label">Pending Bills</span>
+        </div>
+      </a>
+
+      <a routerLink="/billing" class="stat-card stat-orange">
+        <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ receptionistPendingAmount | currency }}</span>
+          <span class="stat-label">Pending Amount</span>
+        </div>
+      </a>
+
+    </div>
+
+
+    <!-- Same real-data charts shown to Admin — reusing the exact same
+         DashboardModel/stats and chart getters, not a separate view. -->
+    <div class="charts-grid">
+
+      <div class="card chart-card">
+
+        <div class="card-header">
+          <h2>Appointments by Status</h2>
+        </div>
+
+        <div class="card-body chart-body">
+
+          <div class="donut" [style.background]="'conic-gradient(' + appointmentStatusGradient + ')'">
+            <div class="donut-hole">
+              <span class="donut-total">{{ stats.totalAppointments }}</span>
+              <span class="donut-label">Total</span>
+            </div>
+          </div>
+
+          <div class="chart-legend">
+            <div class="legend-item" *ngFor="let seg of appointmentStatusSegments">
+              <span class="legend-dot" [style.background]="seg.color"></span>
+              <span class="legend-label">{{ seg.label }}</span>
+              <span class="legend-value">{{ seg.value }}</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card chart-card">
+
+        <div class="card-header">
+          <h2>Billing Status</h2>
+        </div>
+
+        <div class="card-body chart-body">
+
+          <div class="bar-chart">
+            <div class="bar-row" *ngFor="let seg of billingSegments">
+              <span class="bar-label">{{ seg.label }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="(seg.value / maxBillingValue) * 100" [style.background]="seg.color"></div>
+              </div>
+              <span class="bar-value">{{ seg.value }}</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card chart-card">
+
+        <div class="card-header">
+          <h2>Revenue Trend</h2>
+        </div>
+
+        <div class="card-body chart-body revenue-trend-body">
+
+          <div class="revenue-bars">
+
+            <div class="revenue-bar-col" *ngFor="let point of revenuePoints">
+
+              <span class="revenue-bar-value">{{ formatRevenueShort(point.revenue) }}</span>
+
+              <div class="revenue-bar-track">
+                <div class="revenue-bar-fill" [style.height.%]="revenueBarHeight(point.revenue)"></div>
+              </div>
+
+              <span class="revenue-bar-month">{{ point.month }}</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card recent-list">
+
+      <div class="card-header">
+        <h2>Recent Appointments</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let appt of recentAppointments" class="recent-item">
+
+          <div class="recent-main">
+            <strong>{{ getPatientName(appt.patientID) }}</strong>
+            <span class="recent-sub">with {{ getDoctorName(appt.doctorID) }}</span>
+          </div>
+
+          <span class="recent-date">{{ appt.appointmentDate }} {{ appt.appointmentTime?.substring(0,5) }}</span>
+
+          <span class="badge"
+                [class.bg-warning]="appt.status === 'Scheduled'"
+                [class.bg-primary]="appt.status === 'Confirmed'"
+                [class.bg-success]="appt.status === 'Completed'"
+                [class.bg-danger]="appt.status === 'Cancelled'">
+            {{ appt.status }}
+          </span>
+
+        </div>
+
+        <div class="empty-state" *ngIf="recentAppointments.length === 0">
+          No appointments yet.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card schedule-list">
+
+      <div class="card-header">
+        <h2>Today's Appointments</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let appt of receptionistTodayAppointments" class="schedule-item">
+
+          <span class="time-pill">{{ appt.appointmentTime?.substring(0,5) }}</span>
+
+          <span class="schedule-patient">{{ getPatientName(appt.patientID) }}</span>
+
+          <span>with {{ getDoctorName(appt.doctorID) }}</span>
+
+          <span class="badge"
+                [class.bg-warning]="appt.status === 'Scheduled'"
+                [class.bg-primary]="appt.status === 'Confirmed'"
+                [class.bg-success]="appt.status === 'Completed'"
+                [class.bg-danger]="appt.status === 'Cancelled'">
+            {{ appt.status }}
+          </span>
+
+        </div>
+
+        <div class="empty-state" *ngIf="receptionistTodayAppointments.length === 0">
+          No appointments today.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="quick-links card">
+
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+
+      <div class="card-body quick-links-body">
+
+        <a routerLink="/appointments" class="quick-link">
+          <i class="bi bi-calendar-check-fill"></i> Appointments
+        </a>
+
+        <a routerLink="/patients" class="quick-link">
+          <i class="bi bi-clipboard2-pulse-fill"></i> Patients
+        </a>
+
+        <a routerLink="/billing" class="quick-link">
+          <i class="bi bi-receipt"></i> Billing
+        </a>
+
+        <a routerLink="/payments" class="quick-link">
+          <i class="bi bi-cash-coin"></i> Payments
+        </a>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- ============ PATIENT ============ -->
+
+  <ng-container *ngIf="!loading && !errorMessage && isPatientRole">
+
+    <div class="card next-appointment-card">
+
+      <div class="card-body">
+
+        <ng-container *ngIf="patientNextAppointment; else noAppointment">
+
+          <p class="next-label">Your Next Appointment</p>
+
+          <h2>{{ patientNextAppointment.appointmentDate }} at {{ patientNextAppointment.appointmentTime?.substring(0,5) }}</h2>
+
+          <p class="next-doctor">with {{ getDoctorName(patientNextAppointment.doctorID) }}</p>
+
+          <span class="badge"
+                [class.bg-warning]="patientNextAppointment.status === 'Scheduled'"
+                [class.bg-primary]="patientNextAppointment.status === 'Confirmed'">
+            {{ patientNextAppointment.status }}
+          </span>
+
+        </ng-container>
+
+        <ng-template #noAppointment>
+
+          <p class="next-label">No upcoming appointments</p>
+
+        </ng-template>
+
+      </div>
+
+    </div>
+
+
+    <div class="card schedule-list" *ngIf="patientUpcomingAppointments.length > 1">
+
+      <div class="card-header">
+        <h2>Upcoming Appointments</h2>
+      </div>
+
+      <div class="card-body">
+
+        <div *ngFor="let appt of patientUpcomingAppointments" class="schedule-item">
+
+          <span class="time-pill">{{ appt.appointmentDate }}</span>
+
+          <span>{{ appt.appointmentTime?.substring(0,5) }}</span>
+
+          <span>with {{ getDoctorName(appt.doctorID) }}</span>
+
+          <span class="badge"
+                [class.bg-warning]="appt.status === 'Scheduled'"
+                [class.bg-primary]="appt.status === 'Confirmed'">
+            {{ appt.status }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="quick-links card">
+
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+
+      <div class="card-body quick-links-body">
+
+        <a routerLink="/appointments" class="quick-link">
+          <i class="bi bi-calendar-check-fill"></i> My Appointments
+        </a>
+
+        <a routerLink="/medical-records" class="quick-link">
+          <i class="bi bi-journal-medical"></i> My Medical Records
+        </a>
+
+        <a routerLink="/billing" class="quick-link">
+          <i class="bi bi-receipt"></i> My Bills
+        </a>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

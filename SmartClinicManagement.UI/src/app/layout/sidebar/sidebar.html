@@ -1,0 +1,187 @@
+<div class="sidebar">
+
+  <a routerLink="/dashboard"
+     routerLinkActive="active">
+
+    <i class="bi bi-house-fill"></i>
+
+    <span>Dashboard</span>
+
+  </a>
+
+
+  <!--  ADMIN / SUPERADMIN -->
+
+  <ng-container *ngIf="isAdmin">
+
+    <a routerLink="/users" routerLinkActive="active">
+      <i class="fa fa-users"></i>
+      <span>Users</span>
+    </a>
+
+    <a routerLink="/doctors" routerLinkActive="active">
+      <i class="fa fa-user-doctor"></i>
+      <span>Doctors</span>
+    </a>
+
+    <a routerLink="/doctor-schedule" routerLinkActive="active">
+      <i class="bi bi-calendar3"></i>
+      <span>Doctor Schedule</span>
+    </a>
+
+    <a routerLink="/patients" routerLinkActive="active">
+      <i class="fa fa-bed"></i>
+      <span>Patients</span>
+    </a>
+
+    <a routerLink="/departments" routerLinkActive="active">
+      <i class="bi bi-building"></i>
+      <span>Departments</span>
+    </a>
+
+    <a routerLink="/roles" routerLinkActive="active">
+      <i class="fa fa-user-shield"></i>
+      <span>Roles</span>
+    </a>
+
+
+    <a routerLink="/appointments" routerLinkActive="active">
+      <i class="bi bi-calendar-check-fill"></i>
+      <span>Appointments</span>
+    </a>
+
+    <a routerLink="/billing" routerLinkActive="active">
+      <i class="bi bi-receipt"></i>
+      <span>Billing</span>
+    </a>
+
+    <a routerLink="/payments" routerLinkActive="active">
+      <i class="bi bi-cash-coin"></i>
+      <span>Payments</span>
+    </a>
+
+  </ng-container>
+
+
+  <!--  DOCTOR  -->
+
+  <ng-container *ngIf="isDoctor">
+
+    <a routerLink="/profile" routerLinkActive="active">
+      <i class="bi bi-person-fill"></i>
+      <span>My Profile</span>
+    </a>
+
+    <a routerLink="/appointments" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <i class="bi bi-calendar-check-fill"></i>
+      <span>My Appointments</span>
+    </a>
+
+    <a routerLink="/patients" routerLinkActive="active">
+      <i class="fa fa-bed"></i>
+      <span>My Patients</span>
+    </a>
+
+    <a routerLink="/medical-records" routerLinkActive="active">
+      <i class="bi bi-journal-medical"></i>
+      <span>Medical Records</span>
+    </a>
+    <a routerLink="/billing" routerLinkActive="active">
+      <i class="bi bi-receipt"></i>
+      <span>Billing</span>
+    </a>
+
+    <a routerLink="/appointments" routerLinkActive="active">
+      <i class="bi bi-calendar3"></i>
+      <span>Schedule</span>
+    </a>
+
+  </ng-container>
+
+
+  <!-- RECEPTIONIST  -->
+
+  <ng-container *ngIf="isReceptionist">
+
+    <a routerLink="/patient-registration" routerLinkActive="active">
+      <i class="bi bi-person-plus-fill"></i>
+      <span>Register Patient</span>
+    </a>
+
+    <a routerLink="/patients" routerLinkActive="active">
+      <i class="fa fa-bed"></i>
+      <span>Patients</span>
+    </a>
+
+    <a routerLink="/appointments" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <i class="bi bi-calendar-check-fill"></i>
+      <span>Appointments</span>
+    </a>
+
+
+    <a routerLink="/appointments" routerLinkActive="active">
+      <i class="bi bi-person-check-fill"></i>
+      <span>Check-In</span>
+    </a>
+
+    <a routerLink="/doctor-schedule" routerLinkActive="active">
+      <i class="bi bi-calendar3"></i>
+      <span>Doctor Schedule</span>
+    </a>
+
+    <a routerLink="/billing" routerLinkActive="active">
+      <i class="bi bi-receipt"></i>
+      <span>Billing</span>
+    </a>
+
+
+    <a routerLink="/medical-records" routerLinkActive="active">
+      <i class="bi bi-journal-medical"></i>
+      <span>Patient Records</span>
+    </a>
+    <a routerLink="/payments" routerLinkActive="active">
+      <i class="bi bi-cash-coin"></i>
+      <span>Payments</span>
+    </a>
+
+  </ng-container>
+
+
+  <!-- PATIENT  -->
+
+  <ng-container *ngIf="isPatient">
+
+    <a routerLink="/profile" routerLinkActive="active">
+      <i class="bi bi-person-fill"></i>
+      <span>My Profile</span>
+    </a>
+
+    <a routerLink="/find-doctors" routerLinkActive="active">
+      <i class="bi bi-search"></i>
+      <span>Find Doctors</span>
+    </a>
+
+    <!-- Opens the Appointments screen with the booking form already open. -->
+    <a routerLink="/appointments" [queryParams]="{ action: 'book' }" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <i class="bi bi-plus-circle-fill"></i>
+      <span>Book Appointment</span>
+    </a>
+
+    <a routerLink="/appointments" routerLinkActive="active">
+      <i class="bi bi-calendar-check-fill"></i>
+      <span>My Appointments</span>
+    </a>
+
+    <a routerLink="/medical-records" routerLinkActive="active">
+      <i class="bi bi-journal-medical"></i>
+      <span>Medical Records</span>
+    </a>
+
+    <a routerLink="/billing" routerLinkActive="active">
+      <i class="bi bi-receipt"></i>
+      <span>Bills</span>
+    </a>
+
+  </ng-container>
+
+</div>

@@ -1,0 +1,243 @@
+<div class="records-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Medical Records</h1>
+
+      <p>
+        Search a patient's medical history, or a doctor's records
+      </p>
+    </div>
+
+    <button class="btn btn-primary"
+            *ngIf="hasSearched && canAddRecord"
+            (click)="openCreateForm()">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Add Record
+
+    </button>
+
+  </div>
+
+
+  <div class="alert alert-warning" *ngIf="linkWarning">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    {{ linkWarning }}
+  </div>
+
+
+  <!-- SEARCH — hidden for Doctor/Patient, whose view is auto-scoped to themselves -->
+
+  <div class="card search-card" *ngIf="canManageSearch">
+
+    <div class="card-body">
+
+      <div class="mode-toggle">
+
+        <button class="btn"
+                [class.btn-primary]="searchMode === 'patient'"
+                [class.btn-outline-primary]="searchMode !== 'patient'"
+                (click)="setSearchMode('patient')">
+          By Patient
+        </button>
+
+        <button class="btn"
+                [class.btn-primary]="searchMode === 'doctor'"
+                [class.btn-outline-primary]="searchMode !== 'doctor'"
+                (click)="setSearchMode('doctor')">
+          By Doctor
+        </button>
+
+      </div>
+
+      <div class="search-row">
+
+        <select class="form-select" *ngIf="searchMode === 'patient'" [(ngModel)]="selectedPatientId">
+          <option [ngValue]="null">Select patient</option>
+          <option *ngFor="let patient of patients" [ngValue]="patient.patientID">
+            {{ getPatientName(patient.patientID) }}
+          </option>
+        </select>
+
+        <select class="form-select" *ngIf="searchMode === 'doctor'" [(ngModel)]="selectedDoctorId">
+          <option [ngValue]="null">Select doctor</option>
+          <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+            {{ getDoctorName(doctor.doctorID) }} — {{ doctor.specialization }}
+          </option>
+        </select>
+
+        <button class="btn btn-primary"
+                [disabled]="(searchMode === 'patient' && !selectedPatientId) || (searchMode === 'doctor' && !selectedDoctorId)"
+                (click)="search()">
+          Search
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FORM -->
+
+  <div class="card form-card"
+       *ngIf="showForm">
+
+    <div class="card-header">
+
+      <h3>
+        {{ editingId ? 'Edit Medical Record' : 'Add Medical Record' }}
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="recordForm"
+            (ngSubmit)="saveRecord()">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Patient</label>
+            <select class="form-select" formControlName="patientID">
+              <option [ngValue]="null">Select patient</option>
+              <option *ngFor="let patient of patientOptionsForForm" [ngValue]="patient.patientID">
+                {{ getPatientName(patient.patientID) }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Doctor</label>
+            <select class="form-select" formControlName="doctorID">
+              <option [ngValue]="null">Select doctor</option>
+              <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+                {{ getDoctorName(doctor.doctorID) }}
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Diagnosis</label>
+          <textarea class="form-control" rows="2" formControlName="diagnosis"></textarea>
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Symptoms</label>
+            <textarea class="form-control" rows="2" formControlName="symptoms"></textarea>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Treatment</label>
+            <textarea class="form-control" rows="2" formControlName="treatment"></textarea>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-8 mb-3">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" rows="2" formControlName="notes"></textarea>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Visit Date</label>
+            <input type="date" class="form-control" formControlName="visitDate">
+          </div>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary me-2">
+          {{ editingId ? 'Update' : 'Save' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="card records-card" *ngIf="hasSearched">
+
+    <div class="card-header list-header">
+      <h2>Records</h2>
+      <span>Total: {{ records.length }}</span>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <div *ngIf="!loading">
+
+      <table class="table table-hover" *ngIf="records.length > 0">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Diagnosis</th>
+            <th>Visit Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let record of records; let i = index">
+
+            <td>{{ i + 1 }}</td>
+
+            <td>{{ getPatientName(record.patientID) }}</td>
+
+            <td>{{ getDoctorName(record.doctorID) }}</td>
+
+            <td>{{ record.diagnosis }}</td>
+
+            <td>{{ record.visitDate ? (record.visitDate | slice:0:10) : '' }}</td>
+
+            <td>
+
+              <button class="btn btn-primary btn-sm me-2" *ngIf="canAddRecord" (click)="editRecord(record)">
+                Edit
+              </button>
+
+              <button class="btn btn-outline-secondary btn-sm" (click)="viewPrescriptions(record.recordID)">
+                Prescriptions
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="empty-state" *ngIf="records.length === 0 && !linkWarning">
+        No Medical Records Found
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

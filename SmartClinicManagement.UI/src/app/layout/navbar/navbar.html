@@ -1,0 +1,147 @@
+<nav class="navbar">
+
+  <div class="brand">
+
+    <span class="brand-icon">🏥</span>
+
+    <span>
+      Smart Clinic Management System
+    </span>
+
+  </div>
+
+
+  <div class="profile-container">
+
+    <button class="profile-button"
+            (click)="toggleMenu()">
+
+      <span class="profile-button-text">
+        <span class="profile-button-name">{{ fullName }}</span>
+        <span class="profile-button-role" *ngIf="role">{{ role }}</span>
+      </span>
+
+      <i class="fa"
+         [class.fa-chevron-down]="!showMenu"
+         [class.fa-chevron-up]="showMenu">
+      </i>
+
+    </button>
+
+
+    <div class="profile-menu"
+         *ngIf="showMenu">
+
+      <div class="profile-header">
+
+        <strong>{{ fullName }}</strong>
+
+        <small>{{ role }}</small>
+
+      </div>
+
+      <hr>
+
+      <button class="menu-item"
+              (click)="goToProfile()">
+
+        <i class="fa fa-user"></i>
+
+        My Profile
+
+      </button>
+
+      <button class="menu-item"
+              (click)="openChangePassword()">
+
+        <i class="fa fa-key"></i>
+
+        Change Password
+
+      </button>
+
+      <hr>
+
+      <button class="menu-item logout"
+              (click)="logout()">
+
+        <i class="fa fa-sign-out-alt"></i>
+
+        Logout
+
+      </button>
+
+    </div>
+
+  </div>
+
+</nav>
+
+
+<!-- CHANGE PASSWORD MODAL -->
+
+<div class="modal-backdrop-custom" *ngIf="showChangePasswordModal" (click)="closeChangePasswordModal()">
+
+  <div class="change-password-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header-custom">
+      <h3>Change Password</h3>
+      <button class="close-btn" (click)="closeChangePasswordModal()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+
+      <div class="alert alert-success" *ngIf="changePasswordSuccess">
+        {{ changePasswordSuccess }}
+      </div>
+
+      <div class="alert alert-danger" *ngIf="changePasswordError">
+        {{ changePasswordError }}
+      </div>
+
+      <form [formGroup]="changePasswordForm" (ngSubmit)="submitChangePassword()">
+
+        <div class="mb-3">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-control" formControlName="currentPassword">
+          <div class="text-danger mt-1"
+               *ngIf="changePasswordForm.get('currentPassword')?.touched && changePasswordForm.get('currentPassword')?.invalid">
+            Current password is required.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-control" formControlName="newPassword">
+          <div class="text-danger mt-1"
+               *ngIf="changePasswordForm.get('newPassword')?.touched && changePasswordForm.get('newPassword')?.invalid">
+            New password must be at least 6 characters.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-control" formControlName="confirmPassword">
+          <div class="text-danger mt-1"
+               *ngIf="changePasswordForm.get('confirmPassword')?.touched && changePasswordForm.get('confirmPassword')?.invalid">
+            Please confirm your new password.
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2" [disabled]="changePasswordSaving">
+          {{ changePasswordSaving ? 'Saving...' : 'Change Password' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="closeChangePasswordModal()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

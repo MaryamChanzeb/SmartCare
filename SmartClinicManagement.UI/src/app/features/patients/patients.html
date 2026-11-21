@@ -1,0 +1,255 @@
+<div class="patients-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Patients</h1>
+      <h3>Total Patients: {{ patients.length }}</h3>
+
+      <p>
+        Manage clinic patients
+      </p>
+    </div>
+
+    <!-- New patients are created via Register Patient — this screen only
+         edits/deletes existing patients. -->
+    <a class="btn btn-primary"
+       *ngIf="canRegisterPatient"
+       routerLink="/patient-registration">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Register Patient
+
+    </a>
+
+  </div>
+
+
+  <div class="alert alert-danger d-flex justify-content-between align-items-center"
+       *ngIf="errorMessage">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn-close" aria-label="Dismiss" (click)="errorMessage = ''"></button>
+  </div>
+
+
+  <!-- FORM (edit only) -->
+
+  <div class="card form-card"
+       *ngIf="showForm">
+
+    <div class="card-header">
+
+      <h3>
+        Edit Patient
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="patientForm"
+            (ngSubmit)="savePatient()">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Blood Group</label>
+            <select class="form-select" formControlName="bloodGroup">
+              <option value="">Select blood group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Assigned Doctor</label>
+            <select class="form-select" formControlName="doctorID">
+              <option [ngValue]="null">No doctor assigned</option>
+              <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+                {{ getDoctorName(doctor.doctorID) }}
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Height (cm)</label>
+            <input type="number" min="0" class="form-control" formControlName="height">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" min="0" class="form-control" formControlName="weight">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Emergency Contact Name</label>
+            <input type="text" class="form-control" formControlName="emergencyContactName">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Emergency Contact Phone</label>
+            <input type="text" class="form-control" formControlName="emergencyContactPhone">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Allergies</label>
+            <textarea class="form-control" rows="2" formControlName="allergies" placeholder="Known allergies"></textarea>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Medical History</label>
+            <textarea class="form-control" rows="2" formControlName="medicalHistory" placeholder="Relevant medical history"></textarea>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" formControlName="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary me-2">
+          Update
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="card search-card">
+
+    <div class="card-body">
+
+      <input type="text"
+             class="form-control"
+             placeholder="Search by name, email, or phone..."
+             [(ngModel)]="searchTerm"
+             (ngModelChange)="applySearch()">
+
+    </div>
+
+  </div>
+
+
+  <div class="card patients-card">
+
+    <div class="card-header list-header">
+      <h2>Patient List</h2>
+      <span>Total: {{ filteredPatients.length }}</span>
+    </div>
+
+    <!-- Loading -->
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <!-- Table -->
+
+    <div *ngIf="!loading">
+
+      <table class="table table-hover" *ngIf="filteredPatients.length > 0">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Blood Group</th>
+            <th>Assigned Doctor</th>
+            <th>Emergency Contact</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let patient of filteredPatients; let i = index">
+
+            <td>{{ i + 1 }}</td>
+
+            <td>{{ getUserName(patient.userID) }}</td>
+
+            <td>{{ patient.bloodGroup }}</td>
+
+            <td>{{ getDoctorName(patient.primaryDoctorID) }}</td>
+
+            <td>
+              {{ patient.emergencyContactName }}
+              <span *ngIf="patient.emergencyContactPhone">
+                ({{ patient.emergencyContactPhone }})
+              </span>
+            </td>
+
+            <td>
+              <span class="badge" [class.bg-success]="patient.status === 'Active'" [class.bg-secondary]="patient.status !== 'Active'">
+                {{ patient.status }}
+              </span>
+            </td>
+
+            <td>
+
+              <a class="btn btn-outline-primary btn-sm me-2" [routerLink]="['/patients', patient.patientID]">
+                View Details
+              </a>
+
+              <ng-container *ngIf="canManagePatients">
+
+                <button class="btn btn-primary btn-sm me-2" (click)="editPatient(patient)">
+                  Edit
+                </button>
+
+                <button class="btn btn-danger btn-sm" (click)="deletePatient(patient.patientID)">
+                  Delete
+                </button>
+
+              </ng-container>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="empty-state" *ngIf="filteredPatients.length === 0">
+        No Patients Found
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

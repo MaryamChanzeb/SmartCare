@@ -1,0 +1,258 @@
+<div class="appointments-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Appointments</h1>
+      <h3>Total Appointments: {{ appointments.length }}</h3>
+
+      <p>
+        Manage clinic appointments
+      </p>
+    </div>
+
+    <button class="btn btn-primary"
+            *ngIf="canBook"
+            (click)="openBookForm()">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Book Appointment
+
+    </button>
+
+  </div>
+
+
+  <!-- FORM -->
+
+  <div class="card form-card"
+       *ngIf="showForm">
+
+    <div class="card-header">
+
+      <h3>
+        {{ editingId ? 'Reschedule Appointment' : 'Book Appointment' }}
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="appointmentForm"
+            (ngSubmit)="editingId ? saveReschedule() : bookAppointment()">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Doctor</label>
+            <select class="form-select" formControlName="doctorID">
+              <option [ngValue]="null">Select doctor</option>
+              <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+                {{ getDoctorName(doctor.doctorID) }} — {{ doctor.specialization }}
+              </option>
+            </select>
+            <div class="text-danger mt-1"
+                 *ngIf="appointmentForm.get('doctorID')?.touched && appointmentForm.get('doctorID')?.invalid">
+              Doctor is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3" *ngIf="!isPatientRole">
+            <label class="form-label">Patient</label>
+            <select class="form-select" formControlName="patientID">
+              <option [ngValue]="null">Select patient</option>
+              <option *ngFor="let patient of patients" [ngValue]="patient.patientID">
+                {{ getPatientName(patient.patientID) }}
+              </option>
+            </select>
+            <div class="text-danger mt-1"
+                 *ngIf="appointmentForm.get('patientID')?.touched && appointmentForm.get('patientID')?.invalid">
+              Patient is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3" *ngIf="isPatientRole">
+            <label class="form-label">Patient</label>
+            <input type="text" class="form-control" [value]="getPatientName(appointmentForm.value.patientID)" disabled>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" formControlName="appointmentDate">
+            <div class="text-danger mt-1"
+                 *ngIf="appointmentForm.get('appointmentDate')?.touched && appointmentForm.get('appointmentDate')?.invalid">
+              Date is required.
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Time</label>
+            <input type="time" class="form-control" formControlName="appointmentTime">
+            <div class="text-danger mt-1"
+                 *ngIf="appointmentForm.get('appointmentTime')?.touched && appointmentForm.get('appointmentTime')?.invalid">
+              Time is required.
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Type</label>
+            <input type="text" class="form-control" formControlName="appointmentType" placeholder="e.g. Consultation">
+          </div>
+
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" rows="2" formControlName="notes" placeholder="Reason for visit / notes"></textarea>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary me-2">
+          {{ editingId ? 'Save Changes' : 'Book' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="alert alert-danger d-flex justify-content-between align-items-center"
+       *ngIf="errorMessage">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn-close" aria-label="Dismiss" (click)="errorMessage = ''"></button>
+  </div>
+
+
+  <div class="card appointments-card">
+
+    <div class="card-header list-header">
+      <h2>Appointment List</h2>
+      <span>Total: {{ appointments.length }}</span>
+    </div>
+
+    <!-- Loading -->
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <!-- Table -->
+
+    <div *ngIf="!loading">
+
+      <div class="table-scroll">
+
+        <table class="table table-hover" *ngIf="appointments.length > 0">
+
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Doctor</th>
+              <th>Patient</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th *ngIf="showTypeColumn">Type</th>
+              <th>Status</th>
+              <th class="actions-col" *ngIf="showActionsColumn">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let appointment of appointments; let i = index">
+
+              <td>{{ i + 1 }}</td>
+
+              <td>{{ getDoctorName(appointment.doctorID) }}</td>
+
+              <td>{{ getPatientName(appointment.patientID) }}</td>
+
+              <td>{{ appointment.appointmentDate }}</td>
+
+              <td>{{ appointment.appointmentTime?.substring(0, 5) }}</td>
+
+              <td *ngIf="showTypeColumn">{{ appointment.appointmentType }}</td>
+
+              <td>
+                <span class="badge status-badge"
+                      [class.bg-warning]="appointment.status === 'Scheduled'"
+                      [class.bg-info]="appointment.status === 'Confirmed'"
+                      [class.bg-primary]="appointment.status === 'CheckedIn'"
+                      [class.bg-success]="appointment.status === 'Completed'"
+                      [class.bg-danger]="appointment.status === 'Cancelled'"
+                      [class.bg-secondary]="appointment.status === 'NoShow'">
+                  {{ getStatusLabel(appointment.status) }}
+                </span>
+              </td>
+
+              <td class="actions-col" *ngIf="showActionsColumn">
+
+                <div class="action-buttons">
+
+                  <button class="btn btn-outline-info btn-sm"
+                          *ngIf="canConfirm(appointment)"
+                          (click)="confirmAppointment(appointment)">
+                    Confirm
+                  </button>
+
+                  <button class="btn btn-outline-primary btn-sm"
+                          *ngIf="canCheckIn(appointment)"
+                          (click)="checkInAppointment(appointment)">
+                    Check-In
+                  </button>
+
+                  <button class="btn btn-outline-success btn-sm"
+                          *ngIf="canComplete(appointment)"
+                          (click)="completeAppointment(appointment)">
+                    Complete
+                  </button>
+
+                  <button class="btn btn-outline-secondary btn-sm"
+                          *ngIf="canReschedule(appointment)"
+                          (click)="openRescheduleForm(appointment)">
+                    Reschedule
+                  </button>
+
+                  <button class="btn btn-outline-danger btn-sm"
+                          *ngIf="canCancel(appointment)"
+                          (click)="cancelAppointment(appointment)">
+                    Cancel
+                  </button>
+
+                  <span class="no-actions" *ngIf="!canConfirm(appointment) && !canCheckIn(appointment) && !canComplete(appointment) && !canReschedule(appointment) && !canCancel(appointment)">
+                    &mdash;
+                  </span>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div class="empty-state" *ngIf="appointments.length === 0">
+        No Appointments Found
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,35 @@
+.unauthorized-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.unauthorized-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  padding: 60px 50px;
+  text-align: center;
+  max-width: 480px;
+}
+
+  .unauthorized-card i {
+    font-size: 60px;
+    color: #dc3545;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+
+  .unauthorized-card h1 {
+    font-size: 30px;
+    margin-bottom: 12px;
+    color: #212529;
+  }
+
+  .unauthorized-card p {
+    color: #6c757d;
+    font-size: 16px;
+    margin-bottom: 28px;
+  }

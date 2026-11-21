@@ -1,0 +1,170 @@
+<div class="department-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Departments</h1>
+      <h3>Total Departments: {{ departments.length }}</h3>
+
+      <p>
+        Manage clinic departments
+      </p>
+    </div>
+
+    <button class="btn btn-primary"
+            (click)="openCreateForm()">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Add Department
+
+    </button>
+
+  </div>
+
+
+  <!-- FORM -->
+
+  <div class="card form-card"
+       *ngIf="showForm">
+
+    <div class="card-header">
+
+      <h3>
+        {{ editingId ? 'Edit Department' : 'Create Department' }}
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="departmentForm"
+            (ngSubmit)="saveDepartment()">
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Department Name
+          </label>
+
+          <input type="text"
+                 class="form-control"
+                 formControlName="departmentName"
+                 placeholder="Enter department name">
+
+          <div class="text-danger mt-1"
+               *ngIf="
+              departmentForm.get('departmentName')?.touched &&
+              departmentForm.get('departmentName')?.invalid
+            ">
+
+            Department name is required.
+
+          </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Description
+          </label>
+
+          <textarea class="form-control"
+                    rows="3"
+                    formControlName="description"
+                    placeholder="Enter description">
+          </textarea>
+
+        </div>
+
+
+        <button type="submit"
+                class="btn btn-primary me-2">
+
+          {{ editingId ? 'Update' : 'Save' }}
+
+        </button>
+
+        <button type="button"
+                class="btn btn-secondary"
+                (click)="cancelForm()">
+
+          Cancel
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="card department-card">
+
+    <div class="card-header list-header">
+      <h2>Department List</h2>
+      <span>Total: {{ departments.length }}</span>
+    </div>
+
+    <!-- Loading -->
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <!-- Table -->
+
+    <div *ngIf="!loading">
+
+      <table class="table table-hover" *ngIf="departments.length > 0">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let department of departments; let i = index">
+
+            <td>{{ i + 1 }}</td>
+
+            <td>{{ department.departmentName }}</td>
+
+            <td>{{ department.description }}</td>
+
+            <td>
+
+              <button class="btn btn-primary btn-sm me-2"
+                      (click)="editDepartment(department)">
+                Edit
+              </button>
+
+              <button class="btn btn-danger btn-sm"
+                      (click)="deleteDepartment(department.departmentID)">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="empty-state" *ngIf="departments.length==0">
+        No Departments Found
+      </div>
+
+    </div>
+
+  </div>

@@ -1,0 +1,6 @@
+@SmartClinicManagement.API_HostAddress = http://localhost:5285
+
+GET {{SmartClinicManagement.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,446 @@
+.dashboard-page {
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+  .dashboard-page .card-header {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+    .dashboard-page .card-header h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+      color: #212529;
+    }
+
+  .dashboard-page .card-body {
+    padding: 14px 16px;
+  }
+
+
+.loading {
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  color: #0d6efd;
+  font-size: 18px;
+}
+
+.error-state {
+  background: #fff3f3;
+  color: #dc3545;
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin-bottom: 20px;
+}
+
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-blue .stat-icon {
+  background: #0d6efd;
+}
+
+.stat-purple .stat-icon {
+  background: #6f42c1;
+}
+
+.stat-green .stat-icon {
+  background: #198754;
+}
+
+.stat-orange .stat-icon {
+  background: #fd7e14;
+}
+
+.stat-teal .stat-icon {
+  background: #20c997;
+}
+
+.stat-red .stat-icon {
+  background: #dc3545;
+}
+
+.stat-indigo .stat-icon {
+  background: #6610f2;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.stat-value {
+  font-size: 21px;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1.1;
+  /* Long currency values now truncate with an ellipsis and never break
+     out of the card; the full value is still available on hover/focus
+     via the title attribute bound in the template. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+
+.recent-list,
+.schedule-list,
+.next-appointment-card,
+.quick-links {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+}
+
+.recent-item,
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+  .recent-item:last-child,
+  .schedule-item:last-child {
+    border-bottom: none;
+  }
+
+.recent-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+.recent-sub {
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.recent-date {
+  color: #6c757d;
+  font-size: 14px;
+  margin-left: auto;
+}
+
+.time-pill {
+  background: #e7f1ff;
+  color: #0d6efd;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 70px;
+  text-align: center;
+}
+
+.schedule-patient {
+  font-weight: 600;
+  color: #212529;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 20px;
+  color: #6c757d;
+}
+
+
+.next-label {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.next-appointment-card h2 {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.next-doctor {
+  color: #6c757d;
+  margin-bottom: 12px;
+}
+
+
+.quick-links-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #f5f7fa;
+  color: #212529;
+  text-decoration: none;
+  font-size: 13px;
+  transition: 0.15s;
+}
+
+  .quick-link i {
+    color: #0d6efd;
+    font-size: 15px;
+  }
+
+  .quick-link:hover {
+    background: #0d6efd;
+    color: white;
+  }
+
+    .quick-link:hover i {
+      color: white;
+    }
+
+
+/* ============ CHARTS ============ */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.chart-card {
+  background: white;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+}
+
+.chart-body {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+}
+
+/* Donut chart — a plain CSS conic-gradient circle with the center cut
+   out via an inset white/hole element. No chart library needed. */
+.donut {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-hole {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1;
+}
+
+.donut-label {
+  font-size: 11px;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  color: #495057;
+  min-width: 80px;
+}
+
+.legend-value {
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Simple horizontal bar chart — pure flexbox widths driven by data. */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar-label {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #495057;
+}
+
+.bar-track {
+  flex: 1;
+  height: 16px;
+  background: #f1f3f5;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.bar-value {
+  width: 36px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: 600;
+  color: #212529;
+  font-size: 14px;
+}
+
+
+/* ============ REVENUE TREND ============ */
+
+.revenue-trend-body {
+  align-items: stretch;
+  height: 150px;
+}
+
+.revenue-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.revenue-bar-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.revenue-bar-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.revenue-bar-track {
+  flex: 1;
+  width: 100%;
+  max-width: 34px;
+  background: #f1f3f5;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.revenue-bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #0d6efd, #0a58ca);
+  border-radius: 6px 6px 0 0;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.revenue-bar-month {
+  font-size: 10px;
+  color: #6c757d;
+  margin-top: 6px;
+  white-space: nowrap;
+}

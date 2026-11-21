@@ -1,0 +1,596 @@
+<div class="users-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Users</h1>
+      <h3>Total Users: {{ users.length }}</h3>
+
+      <p>
+        Manage system users
+      </p>
+    </div>
+
+    <button class="btn btn-primary"
+            (click)="openCreateForm()">
+
+      <i class="bi bi-plus-lg"></i>
+
+      Add User
+
+    </button>
+
+  </div>
+
+
+  <div class="alert alert-danger d-flex justify-content-between align-items-center"
+       *ngIf="errorMessage">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn-close" aria-label="Dismiss" (click)="errorMessage = ''"></button>
+  </div>
+
+
+  <!-- STEP 1: role picker, shown after clicking "Add User" -->
+
+  <div class="card form-card role-picker-card" *ngIf="showRoleSelect">
+
+    <div class="card-header">
+      <h3>What kind of account are you creating?</h3>
+    </div>
+
+    <div class="card-body">
+
+      <div class="role-picker">
+
+        <button type="button" class="role-option" (click)="selectCreateRole('Doctor')">
+          <i class="bi bi-heart-pulse"></i>
+          <span class="role-option-title">Doctor</span>
+          <span class="role-option-desc">Creates a doctor profile with specialization, fees and schedule details.</span>
+        </button>
+
+        <button type="button" class="role-option" (click)="selectCreateRole('Patient')">
+          <i class="bi bi-person"></i>
+          <span class="role-option-title">Patient</span>
+          <span class="role-option-desc">Creates a patient profile with medical details and an optional assigned doctor.</span>
+        </button>
+
+        <button type="button" class="role-option" (click)="selectCreateRole('Receptionist')">
+          <i class="bi bi-person-badge"></i>
+          <span class="role-option-title">Receptionist</span>
+          <span class="role-option-desc">Creates a front-desk staff account tied to a department.</span>
+        </button>
+
+      </div>
+
+      <button type="button" class="btn btn-secondary mt-3" (click)="cancelForm()">
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- STEP 2a: Doctor create form -->
+
+  <div class="card form-card" *ngIf="showForm && creatingRole === 'Doctor'">
+
+    <div class="card-header">
+      <h3>Create Doctor</h3>
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="doctorCreateForm" (ngSubmit)="saveDoctor()">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" formControlName="firstName" placeholder="Enter first name">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorCreateForm.get('firstName')?.touched && doctorCreateForm.get('firstName')?.invalid">
+              First name is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" formControlName="lastName" placeholder="Enter last name">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorCreateForm.get('lastName')?.touched && doctorCreateForm.get('lastName')?.invalid">
+              Last name is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorCreateForm.get('email')?.touched && doctorCreateForm.get('email')?.invalid">
+              A valid email is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone" placeholder="Enter phone number">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select" formControlName="departmentID">
+              <option [ngValue]="null">Select department</option>
+              <option *ngFor="let dept of departments" [ngValue]="dept.departmentID">
+                {{ dept.departmentName }}
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">License Number</label>
+            <input type="text" class="form-control" formControlName="licenseNumber" placeholder="Enter license number">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorCreateForm.get('licenseNumber')?.touched && doctorCreateForm.get('licenseNumber')?.invalid">
+              License number is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Specialization</label>
+            <input type="text" class="form-control" formControlName="specialization" placeholder="e.g. Cardiology">
+            <div class="text-danger mt-1"
+                 *ngIf="doctorCreateForm.get('specialization')?.touched && doctorCreateForm.get('specialization')?.invalid">
+              Specialization is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Qualification</label>
+            <input type="text" class="form-control" formControlName="qualification" placeholder="e.g. MBBS, MD">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Experience (years)</label>
+            <input type="number" class="form-control" formControlName="experienceYears" min="0">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Consultation Fee</label>
+            <input type="number" class="form-control" formControlName="consultationFee" min="0">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Room Number</label>
+            <input type="text" class="form-control" formControlName="roomNumber">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Joining Date</label>
+            <input type="date" class="form-control" formControlName="joiningDate">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" formControlName="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+
+        <button type="button" class="btn btn-outline-secondary me-2" (click)="backToRoleSelect()">
+          Back
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- STEP 2b: Patient create form -->
+
+  <div class="card form-card" *ngIf="showForm && creatingRole === 'Patient'">
+
+    <div class="card-header">
+      <h3>Create Patient</h3>
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="patientCreateForm" (ngSubmit)="savePatient()">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" formControlName="firstName" placeholder="Enter first name">
+            <div class="text-danger mt-1"
+                 *ngIf="patientCreateForm.get('firstName')?.touched && patientCreateForm.get('firstName')?.invalid">
+              First name is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" formControlName="lastName" placeholder="Enter last name">
+            <div class="text-danger mt-1"
+                 *ngIf="patientCreateForm.get('lastName')?.touched && patientCreateForm.get('lastName')?.invalid">
+              Last name is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+            <div class="text-danger mt-1"
+                 *ngIf="patientCreateForm.get('email')?.touched && patientCreateForm.get('email')?.invalid">
+              A valid email is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone" placeholder="Enter phone number">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Assign Doctor (optional)</label>
+            <select class="form-select" formControlName="doctorID">
+              <option [ngValue]="null">No doctor assigned</option>
+              <option *ngFor="let doctor of doctors" [ngValue]="doctor.doctorID">
+                {{ getDoctorName(doctor) }}
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Blood Group</label>
+            <input type="text" class="form-control" formControlName="bloodGroup" placeholder="e.g. O+">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Height (cm)</label>
+            <input type="number" class="form-control" formControlName="height" min="0">
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" class="form-control" formControlName="weight" min="0">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Emergency Contact Name</label>
+            <input type="text" class="form-control" formControlName="emergencyContactName">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Emergency Contact Phone</label>
+            <input type="text" class="form-control" formControlName="emergencyContactPhone">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Allergies</label>
+            <textarea class="form-control" formControlName="allergies" rows="2"></textarea>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Medical History</label>
+            <textarea class="form-control" formControlName="medicalHistory" rows="2"></textarea>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+
+        <button type="button" class="btn btn-outline-secondary me-2" (click)="backToRoleSelect()">
+          Back
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- FORM — plain user form: used to Edit any existing user, and to
+       create a Receptionist (no dedicated profile table, so it's just
+       account fields + department, same shape as before). -->
+
+  <div class="card form-card"
+       *ngIf="showForm && (editingId || creatingRole === 'Receptionist')">
+
+    <div class="card-header">
+
+      <h3>
+        {{ editingId ? 'Edit User' : 'Create Receptionist' }}
+      </h3>
+
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="userForm"
+            (ngSubmit)="saveUser()">
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" formControlName="firstName" placeholder="Enter first name">
+            <div class="text-danger mt-1"
+                 *ngIf="userForm.get('firstName')?.touched && userForm.get('firstName')?.invalid">
+              First name is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" formControlName="lastName" placeholder="Enter last name">
+            <div class="text-danger mt-1"
+                 *ngIf="userForm.get('lastName')?.touched && userForm.get('lastName')?.invalid">
+              Last name is required.
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+            <div class="text-danger mt-1"
+                 *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid">
+              A valid email is required.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone" placeholder="Enter phone number">
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-select" formControlName="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth">
+          </div>
+
+          <div class="col-md-4 mb-3" *ngIf="editingId">
+            <label class="form-label">Status</label>
+            <select class="form-select" formControlName="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select" formControlName="departmentID">
+              <option [ngValue]="null">Select department</option>
+              <option *ngFor="let dept of departments" [ngValue]="dept.departmentID">
+                {{ dept.departmentName }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3" *ngIf="editingId">
+            <label class="form-label">Role</label>
+            <select class="form-select" formControlName="roleID">
+              <option [ngValue]="null">Select role</option>
+              <option *ngFor="let role of roles" [ngValue]="role.roleID">
+                {{ role.roleName }}
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <button type="submit" class="btn btn-primary me-2" [disabled]="saving">
+          {{ saving ? 'Saving...' : (editingId ? 'Update' : 'Save') }}
+        </button>
+
+        <button type="button" class="btn btn-outline-secondary me-2" *ngIf="!editingId" (click)="backToRoleSelect()">
+          Back
+        </button>
+
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          Cancel
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <div class="card users-card">
+
+    <div class="card-header list-header">
+      <h2>User List</h2>
+      <span>Total: {{ users.length }}</span>
+    </div>
+
+    <!-- Loading -->
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner-border text-primary"></div>
+      <span>Loading...</span>
+    </div>
+
+    <!-- Table -->
+
+    <div *ngIf="!loading">
+
+      <table class="table table-hover" *ngIf="users.length > 0">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let user of users; let i = index">
+
+            <td>{{ i + 1 }}</td>
+
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+
+            <td>{{ user.email }}</td>
+
+            <td>{{ user.phone }}</td>
+
+            <td>{{ user.departmentName }}</td>
+
+            <td>{{ user.roleName }}</td>
+
+            <td>
+              <span class="badge" [class.bg-success]="user.status === 'Active'" [class.bg-secondary]="user.status !== 'Active'">
+                {{ user.status }}
+              </span>
+            </td>
+
+            <td>
+
+              <button class="btn btn-primary btn-sm me-2" (click)="editUser(user)">
+                Edit
+              </button>
+
+              <button class="btn btn-danger btn-sm" (click)="deleteUser(user.userID)">
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="empty-state" *ngIf="users.length === 0">
+        No Users Found
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

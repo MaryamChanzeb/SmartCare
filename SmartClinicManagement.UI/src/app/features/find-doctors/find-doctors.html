@@ -1,0 +1,81 @@
+<div class="find-doctors-page">
+
+  <div class="page-header">
+    <h1>Find a Doctor</h1>
+    <p>Browse available doctors and book an appointment</p>
+  </div>
+
+
+  <div class="card search-card">
+
+    <div class="card-body search-row">
+
+      <input type="text"
+             class="form-control"
+             placeholder="Search by name or specialization..."
+             [(ngModel)]="searchTerm"
+             (ngModelChange)="applyFilters()">
+
+      <select class="form-select" [(ngModel)]="specializationFilter" (ngModelChange)="applyFilters()">
+        <option value="">All Specializations</option>
+        <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary"></div>
+    <span>Loading doctors...</span>
+  </div>
+
+
+  <div class="doctor-grid" *ngIf="!loading">
+
+    <div class="doctor-card" *ngFor="let doctor of filteredDoctors">
+
+      <div class="doctor-avatar">
+        <i class="bi bi-person-badge-fill"></i>
+      </div>
+
+      <h3>{{ getDoctorName(doctor.doctorID) }}</h3>
+
+      <span class="specialization-pill">{{ doctor.specialization }}</span>
+
+      <p class="qualification" *ngIf="doctor.qualification">{{ doctor.qualification }}</p>
+
+      <div class="doctor-meta">
+        <span *ngIf="doctor.experienceYears">
+          <i class="bi bi-briefcase-fill"></i> {{ doctor.experienceYears }} yrs experience
+        </span>
+        <span *ngIf="doctor.roomNumber">
+          <i class="bi bi-door-open-fill"></i> Room {{ doctor.roomNumber }}
+        </span>
+        <span *ngIf="doctor.consultationFee">
+          <i class="bi bi-cash"></i> {{ doctor.consultationFee | currency }} fee
+        </span>
+      </div>
+
+      <div class="card-actions">
+
+        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/doctors', doctor.doctorID]">
+          View Details
+        </a>
+
+        <button class="btn btn-primary btn-sm" (click)="bookWithDoctor(doctor)">
+          Book Appointment
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="empty-state" *ngIf="filteredDoctors.length === 0">
+      No doctors match your search.
+    </div>
+
+  </div>
+
+</div>

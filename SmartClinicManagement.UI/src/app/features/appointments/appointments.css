@@ -1,0 +1,130 @@
+.appointments-page {
+  padding: 10px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+  .page-header h1 {
+    font-size: 42px;
+    margin-bottom: 5px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+.appointments-card,
+.form-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 28px;
+}
+
+  .list-header h2 {
+    margin: 0;
+  }
+
+.loading {
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  color: #0d6efd;
+  font-size: 18px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.status-badge {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+/* Horizontal scroll lives on a wrapper around the <table> itself (not
+   just the card), so the table's true rendered width is what scrolls —
+   this is what keeps the Actions column's right edge, and its row
+   borders/background, properly attached to the rest of each row instead
+   of visually "floating" off to the right past the table bounds. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+  .table-scroll table {
+    width: 100%;
+  }
+
+/* Fixed width on both the header and body cells of this column so every
+   row reserves the same amount of space regardless of how many action
+   buttons that particular row has — this is what keeps everything
+   aligned row to row instead of jumping around. */
+.actions-col {
+  width: 260px;
+  min-width: 260px;
+  vertical-align: middle;
+}
+
+/* The <td> stays a normal table cell; the flex layout lives on this
+   inner wrapper instead of directly on the <td> (display:flex on a
+   table cell can render inconsistently across browsers, which was the
+   root cause of the buttons appearing to sit outside/next to the row
+   rather than inside it). */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+  .action-buttons .btn {
+    white-space: nowrap;
+  }
+
+.no-actions {
+  color: #adb5bd;
+}
+
+
+@media (max-width: 768px) {
+
+  .page-header h1 {
+    font-size: 30px;
+  }
+
+  .page-header p {
+    font-size: 15px;
+  }
+
+  .list-header {
+    padding: 16px 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .actions-col {
+    width: 200px;
+    min-width: 200px;
+  }
+
+  .action-buttons {
+    gap: 6px;
+  }
+}
